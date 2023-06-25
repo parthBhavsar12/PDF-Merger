@@ -1,19 +1,22 @@
+const express = require("express");
+const path = require("path");
+const app = express();
+const multer = require("multer");
+const { mergePdfs } = require("./merge");
 
-const express = require('express')
-const path = require('path')
-const app = express()
-const multer  = require('multer')
-const {mergePdfs}  = require('./merge')
-
-const upload = multer({ dest: 'uploads/' })
-app.use('/static', express.static('public'))
-const port = 3000
+app.use("/static", express.static("public"));
+var storage = multer.diskStorage({
+  destination: "./uploads",
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+const port = 3000;
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, "templates/index.html"))
 })
-
- 
 
 app.post('/merge', upload.array('pdfs', 2), async (req, res, next)=> {
   console.log(req.files)
